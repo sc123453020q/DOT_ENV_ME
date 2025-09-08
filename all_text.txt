@@ -1,0 +1,6 @@
+npm install react-router-dom
+download tailwindf from its website
+npm install firebase
+npm install three @react-three/fiber @react-three/drei
+npm install framer-motion lucide-react
+npm install @react-spring/web @react-spring/three
