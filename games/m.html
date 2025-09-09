@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoQuest — Environmental Learning Game</title>
+  <style>
+    :root{
+      --bg1:#0f2027; /* deep teal */
+      --bg2:#203a43; /* forest */
+      --bg3:#2c5364; /* ocean */
+      --glass: rgba(255,255,255,.10);
+      --glass-2: rgba(255,255,255,.18);
+      --text:#ecf4f1;
+      --accent:#7CFC00; /* lawn green */
+      --accent-2:#00e5ff; /* cyan */
+      --warn:#ffb300; /* amber */
+      --danger:#ff5252;
+      --ok:#66bb6a;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(255,255,255,.06), transparent),
+                  linear-gradient(135deg, var(--bg1), var(--bg2) 40%, var(--bg3));
+      overflow:hidden;
+    }
+    /* Floating nature particles (leaves, bubbles, stars) */
+    .particles{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+    .leaf{position:absolute; font-size:22px; opacity:.15; animation: drift 14s linear infinite;}
+    .leaf:nth-child(3n){opacity:.22; animation-duration:18s}
+    .leaf:nth-child(5n){opacity:.10; animation-duration:20s}
+    @keyframes drift{ from{ transform: translateY(-10vh) translateX(0) rotate(0deg)} to{ transform: translateY(110vh) translateX(40vw) rotate(360deg)}}
+
+    /* App shell */
+    .wrap{
+      position:relative; z-index:1; height:100%; width:100%; display:grid; place-items:center; padding:24px;
+    }
+    .card{
+      width:min(920px, 96vw); min-height:560px; background:linear-gradient(180deg, var(--glass), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.18);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: var(--shadow);
+      overflow:hidden; position:relative;
+    }
+
+    header{
+      display:flex; align-items:center; gap:16px; padding:18px 22px; border-bottom:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+    }
+    .logo{
+      width:56px; height:56px; border-radius:50%; display:grid; place-items:center; cursor:pointer;
+      background: radial-gradient(circle at 35% 30%, #9cff9c, #2ecc71 60%, #1b5e20);
+      color:#043; font-size:28px; user-select:none; position:relative;
+      box-shadow: inset 0 4px 14px rgba(0,0,0,.25), 0 8px 18px rgba(0,0,0,.25);
+      transition: transform .2s ease;
+    }
+    .logo:hover{ transform: scale(1.05) rotate(-2deg); }
+    .title{ font-weight:800; letter-spacing:.5px; display:flex; flex-direction:column; line-height:1.1}
+    .title small{ opacity:.75; font-weight:500}
+
+    .btnbar{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:none; padding:10px 16px; border-radius:14px; cursor:pointer; font-weight:700; letter-spacing:.3px;
+      color:#042; background:linear-gradient(180deg, #bcffb8, #6ee7b7); box-shadow:0 6px 18px rgba(0,0,0,.25);
+      transition: transform .15s ease, filter .2s ease, background .2s ease;
+    }
+    .btn:hover{ transform: translateY(-2px) }
+    .btn.secondary{ background:linear-gradient(180deg, #b3e5fc, #80deea); }
+    .btn.ghost{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.25)}
+
+    main{ padding:24px; display:grid; grid-template-rows:auto 1fr auto; gap:16px; height:calc(100% - 92px)}
+
+    .screen{ display:none; height:100% }
+    .screen.active{ display:grid; grid-template-rows: auto 1fr auto; gap:18px }
+
+    .hero{
+      display:grid; place-items:center; text-align:center; padding:24px; border-radius:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .big-title{ font-size:clamp(26px, 2.6vw, 36px); font-weight:900; margin:0 }
+    .subtitle{ opacity:.9; margin-top:6px }
+
+    .menu{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px }
+    .menu .tile{
+      background:linear-gradient(180deg, var(--glass-2), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:20px; display:grid; gap:8px; align-content:center; text-align:center; cursor:pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .menu .tile:hover{ transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,.25) }
+    .tile .ico{ font-size:36px }
+    .tile .label{ font-weight:800; letter-spacing:.3px }
+
+    .statusbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.1) }
+    .pill{ padding:6px 12px; border-radius:999px; background:rgba(0,0,0,.25); font-weight:700 }
+
+    /* Question card */
+    .qcard{ height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:16px }
+    .qheader{ display:flex; gap:12px; align-items:center }
+    .qemoji{ font-size:28px; filter: drop-shadow(0 2px 8px rgba(0,0,0,.4)) }
+    .qtext{ font-size:clamp(18px, 2vw, 22px); font-weight:800 }
+
+    .animwrap{ position:relative; height:160px; border-radius:18px; border:1px solid rgba(255,255,255,.1);
+      background: radial-gradient(400px 160px at 20% 10%, rgba(255,255,255,.08), transparent);
+      overflow:hidden;
+    }
+    /* Category animations */
+    .anim.tree .sprout{ position:absolute; left:20%; bottom:18px; width:14px; height:60px; background:#2e7d32; border-radius:10px; transform-origin:bottom center; animation: sway 3s ease-in-out infinite }
+    .anim.tree .leaf1, .anim.tree .leaf2{ position:absolute; width:22px; height:22px; border-radius:50%; background:#66bb6a; left:calc(20% - 6px);
+      transform-origin: left bottom; animation: sway 3s ease-in-out infinite reverse }
+    .anim.tree .leaf1{ bottom:74px }
+    .anim.tree .leaf2{ bottom:94px; left:calc(20% + 6px) }
+    @keyframes sway{ 0%,100%{ transform: rotate(-6deg) } 50%{ transform: rotate(6deg) }}
+
+    .anim.recycle .ring{ position:absolute; inset:0; margin:auto; width:120px; height:120px; border-radius:50%; border:6px dashed #80deea; animation: spin 6s linear infinite; opacity:.8}
+    .anim.recycle .tri{ position:absolute; inset:0; margin:auto; width:0; height:0; border-left:16px solid transparent; border-right:16px solid transparent; border-bottom:28px solid #a5d6a7; transform: translateY(20px) }
+    @keyframes spin{ to{ transform: rotate(360deg) }}
+
+    .anim.ocean .wave{ position:absolute; bottom:-10px; width:140%; height:60px; background: linear-gradient(180deg, rgba(0,229,255,.65), rgba(0,229,255,.15)); border-radius:100%; left:-20%; animation: swell 5s ease-in-out infinite }
+    .anim.ocean .wave:nth-child(2){ animation-duration:7s; opacity:.5; bottom:-18px }
+    @keyframes swell{ 0%,100%{ transform: translateX(0) } 50%{ transform: translateX(40px) }}
+
+    .choices{ display:grid; gap:10px; align-content:start }
+    .choice{ text-align:left; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.16); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); cursor:pointer; font-weight:700 }
+    .choice:hover{ filter: brightness(1.08); transform: translateY(-1px) }
+    .choice.correct{ outline: 2px solid var(--ok)}
+    .choice.wrong{ outline: 2px solid var(--danger)}
+
+    .controls{ display:flex; justify-content:space-between; align-items:center; gap:10px }
+
+    /* Footer */
+    footer{ display:flex; justify-content:space-between; align-items:center; opacity:.85; padding-inline:8px }
+
+    /* Dialog / Modal */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; place-items:center; z-index:5 }
+    .modal{ width:min(740px, 92vw); background:linear-gradient(90deg, rgba(7, 167, 226, 0.784), rgba(9, 234, 28, 0.712)); border:1px solid rgba(255, 255, 255, 0.855); border-radius:20px; padding:18px 18px 22px; box-shadow: var(--shadow) }
+    .modal h3{ margin:6px 8px 8px; font-size:22px }
+    .modal .grid{ display:grid; gap:10px }
+    .modal .row{ display:flex; gap:12px; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:12px; background:rgba(0,0,0,.2); border:1px solid rgba(255,255,255,.1) }
+    .modal .row label{ font-weight:700 }
+    .modal .row input[type="range"]{ width:220px }
+    .modal .actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px }
+
+    /* Results */
+    .results{ display:grid; gap:12px; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+    .stat{ background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:14px }
+    .stat .num{ font-size:28px; font-weight:900 }
+
+    /* Responsive */
+    @media (max-width:640px){
+      .btnbar{ gap:6px }
+      header{ gap:10px }
+      .logo{ width:48px; height:48px; font-size:24px }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating ambient nature particles -->
+  <div class="particles" aria-hidden="true" id="particles"></div>
+
+  <div class="wrap">
+    <div class="card" role="application" aria-label="EcoQuest game">
+      <header>
+        <div class="logo" id="logo" title="Tap for rules">🌍</div>
+        <div class="title">
+          <div>EcoQuest</div>
+          <small>Environmental Learning Game</small>
+        </div>
+        <div class="btnbar">
+          <button class="btn" id="playBtn">▶ Play</button>
+          <button class="btn secondary" id="rulesBtn">📜 Rules</button>
+          <button class="btn ghost" id="homeBtn">🏠 Home</button>
+        </div>
+      </header>
+
+      <main>
+        <!-- HOME SCREEN -->
+        <section class="screen active" id="homeScreen">
+          <div class="hero">
+            <h2 class="big-title">Learn • Play • Protect</h2>
+            <div class="subtitle">Master sustainability through quick quizzes and nature-themed animations.</div>
+          </div>
+
+          <div class="menu">
+            <div class="tile" id="tilePlay">
+              <div class="ico">🎮</div>
+              <div class="label">Play</div>
+              <div class="desc">Start a timed quiz with negative marking.</div>
+            </div>
+            <div class="tile" id="tileRules">
+              <div class="ico">📜</div>
+              <div class="label">Rules</div>
+              <div class="desc">Scoring, time limits, and tips.</div>
+            </div>
+            <div class="tile" id="tileSettings">
+              <div class="ico">⏱️</div>
+              <div class="label">Time & Options</div>
+              <div class="desc">Set quiz duration and penalties.</div>
+            </div>
+          </div>
+
+          <footer>
+            <span>Tip: You can click the 🌍 logo anytime to view the rules.</span>
+            <span class="pill">v1.0</span>
+          </footer>
+        </section>
+
+        <!-- QUIZ SCREEN -->
+        <section class="screen" id="quizScreen">
+          <div class="statusbar">
+            <span class="pill" id="timerPill">⏳ Time: <b id="timer">--:--</b></span>
+            <span class="pill">Question <b id="qIndex">1</b>/<b id="qTotal">1</b></span>
+            <span class="pill">Score <b id="score">0</b></span>
+            <span class="pill" title="Negative marking">Penalty −<b id="penaltyView">0.25</b></span>
+          </div>
+
+          <div class="qcard">
+            <div class="qheader">
+              <div class="qemoji" id="qEmoji">🌳</div>
+              <div class="qtext" id="qText">Question text…</div>
+            </div>
+            <div class="animwrap">
+              <div class="anim tree" id="animArea">
+                <!-- Tree animation by default -->
+                <div class="sprout"></div>
+                <div class="leaf1"></div>
+                <div class="leaf2"></div>
+              </div>
+            </div>
+            <div class="choices" id="choices"></div>
+
+            <div class="controls">
+              <button class="btn ghost" id="skipBtn">Skip</button>
+              <button class="btn secondary" id="nextBtn">Next →</button>
+            </div>
+          </div>
+
+          <footer>
+            <span>Answer carefully: wrong answers subtract points.</span>
+            <button class="btn ghost" id="quitBtn">⏹ Quit</button>
+          </footer>
+        </section>
+
+        <!-- RESULTS SCREEN -->
+        <section class="screen" id="resultScreen">
+          <div class="hero" style="align-self:start">
+            <h2 class="big-title">Your EcoQuest Results</h2>
+            <div class="subtitle">Great effort! Every correct answer grows the planet greener 🌱</div>
+          </div>
+
+          <div class="results" id="resultsGrid"></div>
+
+          <div class="controls" style="margin-top:10px">
+            <button class="btn" id="playAgainBtn">Play Again</button>
+            <button class="btn ghost" id="backHomeBtn">Back Home</button>
+          </div>
+
+          <footer>
+            <span>Want a tougher run? Reduce the time or increase penalties in Options.</span>
+            <span class="pill">Keep learning ✨</span>
+          </footer>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- RULES / SETTINGS MODALS -->
+  <div class="modal-backdrop" id="rulesModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Game Rules">
+      <h3>📜 EcoQuest Rules</h3>
+      <div class="grid">
+        <div class="row">✅ Correct answer: <b>+1</b> point</div>
+        <div class="row">❌ Wrong answer: <b>−<span id="rulePenalty">0.25</span></b> (negative marking)</div>
+        <div class="row">⏱️ You have a total quiz time. When it ends, the game auto-submits.</div>
+        <div class="row">⏭️ You can <b>skip</b> a question (no penalty) but no going back.</div>
+        <div class="row">🌿 Nature animations hint at the topic of each question.</div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Game Options">
+      <h3>⏱️ Time & Options</h3>
+      <div class="grid">
+        <div class="row">
+          <label for="timeRange">Total Time (minutes)</label>
+          <input id="timeRange" type="range" min="1" max="10" step="1" value="3" />
+          <span id="timeLabel" class="pill">3 min</span>
+        </div>
+        <div class="row">
+          <label for="penaltyRange">Negative Mark per Wrong</label>
+          <input id="penaltyRange" type="range" min="0" max="1" step="0.05" value="0.25" />
+          <span id="penaltyLabel" class="pill">0.25</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-close>Cancel</button>
+        <button class="btn" id="saveSettingsBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*********************
+     * DATA & STATE
+     *********************/
+    const QUESTIONS = [
+      {
+        text: "Which gas do trees absorb during photosynthesis?",
+        choices: ["Oxygen", "Carbon Dioxide", "Methane", "Nitrogen"],
+        answer: 1,
+        cat: "tree",
+        emoji: "🌳",
+      },
+      {
+        text: "Which of the following is the best example of a recyclable item?",
+        choices: ["Banana peel", "Plastic bottle", "Styrofoam cup", "Tissue"],
+        answer: 1,
+        cat: "recycle",
+        emoji: "♻️",
+      },
+      {
+        text: "Which is a renewable source of energy?",
+        choices: ["Coal", "Wind", "Diesel", "Natural Gas"],
+        answer: 1,
+        cat: "wind",
+        emoji: "💨",
+      },
+      {
+        text: "Oceans help regulate Earth's climate by…",
+        choices: ["Producing plastic", "Absorbing heat and CO₂", "Blocking sunlight", "Stopping winds"],
+        answer: 1,
+        cat: "ocean",
+        emoji: "🌊",
+      },
+      {
+        text: "The 3 R's of waste management stand for…",
+        choices: ["Reduce, Reuse, Recycle", "Remove, Rebuild, Reclaim", "Return, Recycle, Repair", "Refuse, Reduce, React"],
+        answer: 0,
+        cat: "recycle",
+        emoji: "♻️",
+      },
+    ];
+
+    const state = {
+      idx: 0,
+      score: 0,
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      totalTimeMin: 3,
+      penalty: 0.25,
+      timerId: null,
+      timeLeftSec: 180,
+      running: false,
+      startedAt: null,
+    };
+
+    /*********************
+     * ELEMENTS
+     *********************/
+    const screens = {
+      home: document.getElementById('homeScreen'),
+      quiz: document.getElementById('quizScreen'),
+      result: document.getElementById('resultScreen')
+    };
+    const particles = document.getElementById('particles');
+    const playBtn = document.getElementById('playBtn');
+    const rulesBtn = document.getElementById('rulesBtn');
+    const homeBtn = document.getElementById('homeBtn');
+
+    const tilePlay = document.getElementById('tilePlay');
+    const tileRules = document.getElementById('tileRules');
+    const tileSettings = document.getElementById('tileSettings');
+
+    const qIndex = document.getElementById('qIndex');
+    const qTotal = document.getElementById('qTotal');
+    const scoreEl = document.getElementById('score');
+    const penaltyView = document.getElementById('penaltyView');
+    const qText = document.getElementById('qText');
+    const qEmoji = document.getElementById('qEmoji');
+    const animArea = document.getElementById('animArea');
+    const choices = document.getElementById('choices');
+    const timerEl = document.getElementById('timer');
+
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const quitBtn = document.getElementById('quitBtn');
+
+    const resultsGrid = document.getElementById('resultsGrid');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    const backHomeBtn = document.getElementById('backHomeBtn');
+
+    const rulesModal = document.getElementById('rulesModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const logo = document.getElementById('logo');
+    const rulePenalty = document.getElementById('rulePenalty');
+
+    const timeRange = document.getElementById('timeRange');
+    const timeLabel = document.getElementById('timeLabel');
+    const penaltyRange = document.getElementById('penaltyRange');
+    const penaltyLabel = document.getElementById('penaltyLabel');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+    /*********************
+     * HELPERS
+     *********************/
+    function switchScreen(id){
+      Object.values(screens).forEach(s => s.classList.remove('active'));
+      screens[id].classList.add('active');
+    }
+
+    function formatTime(sec){
+      const m = Math.floor(sec/60).toString().padStart(2,'0');
+      const s = Math.floor(sec%60).toString().padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function startTimer(){
+      clearInterval(state.timerId);
+      state.timeLeftSec = Math.round(state.totalTimeMin * 60);
+      timerEl.textContent = formatTime(state.timeLeftSec);
+      state.startedAt = Date.now();
+      state.timerId = setInterval(()=>{
+        state.timeLeftSec--;
+        timerEl.textContent = formatTime(Math.max(0,state.timeLeftSec));
+        if(state.timeLeftSec <= 0){
+          clearInterval(state.timerId);
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function setAnimation(cat){
+      animArea.className = 'anim'; // reset
+      animArea.innerHTML = '';
+      if(cat === 'tree'){
+        animArea.classList.add('tree');
+        animArea.innerHTML = `
+          <div class="sprout"></div>
+          <div class="leaf1"></div>
+          <div class="leaf2"></div>
+        `;
+      } else if(cat === 'recycle'){
+        animArea.classList.add('recycle');
+        animArea.innerHTML = `
+          <div class="ring"></div>
+          <div class="tri"></div>
+        `;
+      } else if(cat === 'ocean'){
+        animArea.classList.add('ocean');
+        animArea.innerHTML = `
+          <div class="wave"></div>
+          <div class="wave"></div>
+        `;
+      } else if(cat === 'wind'){
+        animArea.classList.add('ocean');
+        animArea.innerHTML = `
+          <div class="wave" style="filter:hue-rotate(60deg)"></div>
+          <div class="wave" style="filter:hue-rotate(60deg)"></div>
+        `;
+      } else {
+        // default
+        animArea.classList.add('tree');
+        animArea.innerHTML = `
+          <div class="sprout"></div>
+          <div class="leaf1"></div>
+          <div class="leaf2"></div>
+        `;
+      }
+    }
+
+    function loadQuestion(){
+      const q = QUESTIONS[state.idx];
+      qIndex.textContent = state.idx + 1;
+      qTotal.textContent = QUESTIONS.length;
+      qEmoji.textContent = q.emoji || '🌿';
+      qText.textContent = q.text;
+      setAnimation(q.cat);
+      choices.innerHTML = '';
+
+      q.choices.forEach((c, i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = c;
+        btn.addEventListener('click', ()=> handleAnswer(i));
+        choices.appendChild(btn);
+      });
+
+      nextBtn.disabled = true;
+    }
+
+    function handleAnswer(index){
+      // prevent double answering
+      const already = [...choices.children].some(b => b.classList.contains('correct') || b.classList.contains('wrong'));
+      if(already) return;
+
+      const q = QUESTIONS[state.idx];
+      const btns = [...choices.children];
+      btns[q.answer].classList.add('correct');
+      if(index === q.answer){
+        state.score += 1;
+        state.correct++;
+      } else {
+        state.score = +(state.score - state.penalty).toFixed(2);
+        state.wrong++;
+        btns[index].classList.add('wrong');
+      }
+      scoreEl.textContent = state.score;
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion(){
+      if(state.idx < QUESTIONS.length - 1){
+        state.idx++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function skipQuestion(){
+      state.skipped++;
+      nextQuestion();
+    }
+
+    function finishQuiz(){
+      clearInterval(state.timerId);
+      state.running = false;
+      // Build results
+      const total = QUESTIONS.length;
+      const attempted = state.correct + state.wrong;
+      const accuracy = total ? Math.round((state.correct/total)*100) : 0;
+      const timeTaken = Math.max(0, Math.round(state.totalTimeMin*60 - state.timeLeftSec));
+
+      resultsGrid.innerHTML = `
+        <div class="stat"><div>Score</div><div class="num">${state.score}</div></div>
+        <div class="stat"><div>Correct</div><div class="num">${state.correct}</div></div>
+        <div class="stat"><div>Wrong</div><div class="num">${state.wrong}</div></div>
+        <div class="stat"><div>Skipped</div><div class="num">${state.skipped}</div></div>
+        <div class="stat"><div>Total Qs</div><div class="num">${total}</div></div>
+        <div class="stat"><div>Accuracy</div><div class="num">${accuracy}%</div></div>
+        <div class="stat"><div>Time Taken</div><div class="num">${Math.floor(timeTaken/60)}m ${(timeTaken%60)}s</div></div>
+      `;
+
+      switchScreen('result');
+    }
+
+    function resetGame(){
+      state.idx = 0; state.score = 0; state.correct = 0; state.wrong = 0; state.skipped = 0; state.running = true;
+      scoreEl.textContent = '0';
+      penaltyView.textContent = state.penalty.toString();
+      rulePenalty.textContent = state.penalty.toString();
+      startTimer();
+      loadQuestion();
+      switchScreen('quiz');
+    }
+
+    /*********************
+     * PARTICLES (floating leaves)
+     *********************/
+    function seedParticles(){
+      const icons = ['🍃','🍀','✨','🌿','🫧'];
+      const count = 32;
+      particles.innerHTML='';
+      for(let i=0;i<count;i++){
+        const el = document.createElement('div');
+        el.className = 'leaf';
+        el.textContent = icons[i%icons.length];
+        el.style.left = Math.random()*100 + 'vw';
+        el.style.animationDelay = (-Math.random()*14)+'s';
+        el.style.fontSize = (18 + Math.random()*14) + 'px';
+        particles.appendChild(el);
+      }
+    }
+
+    /*********************
+     * MODALS
+     *********************/
+    function openModal(m){ m.style.display = 'grid'; }
+    function closeModal(m){ m.style.display = 'none'; }
+    document.querySelectorAll('.modal [data-close]').forEach(btn=> btn.addEventListener('click', e=> closeModal(e.target.closest('.modal-backdrop'))));
+    rulesBtn.addEventListener('click', ()=> openModal(rulesModal));
+    tileRules.addEventListener('click', ()=> openModal(rulesModal));
+    logo.addEventListener('click', ()=> openModal(rulesModal));
+
+    // Settings modal logic
+    timeRange.addEventListener('input', ()=> timeLabel.textContent = timeRange.value + ' min');
+    penaltyRange.addEventListener('input', ()=> penaltyLabel.textContent = Number(penaltyRange.value).toFixed(2));
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', ()=>{
+      state.totalTimeMin = parseInt(timeRange.value, 10);
+      state.penalty = Number(penaltyRange.value);
+      penaltyView.textContent = state.penalty.toString();
+      rulePenalty.textContent = state.penalty.toString();
+      closeModal(settingsModal);
+    });
+
+    tileSettings.addEventListener('click', ()=> openModal(settingsModal));
+
+    /*********************
+     * NAV & FLOW
+     *********************/
+    function goHome(){ switchScreen('home'); }
+
+    playBtn.addEventListener('click', ()=>{ openModal(settingsModal); });
+    document.getElementById('tilePlay').addEventListener('click', ()=>{ openModal(settingsModal); });
+    document.getElementById('homeBtn').addEventListener('click', goHome);
+
+    document.getElementById('rulesBtn');
+
+    document.getElementById('quitBtn').addEventListener('click', finishQuiz);
+    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+    document.getElementById('skipBtn').addEventListener('click', skipQuestion);
+
+    document.getElementById('playAgainBtn').addEventListener('click', ()=>{ resetGame(); });
+    document.getElementById('backHomeBtn').addEventListener('click', goHome);
+
+    // When Settings saved after clicking Play from home, immediately start game
+    saveSettingsBtn.addEventListener('click', ()=>{
+      // If user opened from home to play, start
+      if(!state.running && screens.home.classList.contains('active')){
+        resetGame();
+      } else if(screens.quiz.classList.contains('active')){
+        // If changed mid-quiz, update timer display only
+        timerEl.textContent = formatTime(state.timeLeftSec);
+      }
+    });
+
+    // Init
+    seedParticles();
+    qTotal.textContent = QUESTIONS.length;
+
+  </script>
+</body>
+</html>

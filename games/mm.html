@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoQuest</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #a8e6cf, #dcedc1);
+      overflow: hidden;
+    }
+    #game-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .menu, .rules, .timer-settings, .quiz, .result {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4caf50;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .logo {
+      font-size: 50px;
+      margin-bottom: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .nature-animation {
+      width: 100px;
+      height: 100px;
+      margin: 20px auto;
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="menu" class="menu">
+      <div class="logo">🌍</div>
+      <h1>EcoQuest</h1>
+      <button onclick="showQuiz()">Play</button>
+      <button onclick="showRules()">Rules</button>
+      <button onclick="showTimerSettings()">Timer Settings</button>
+    </div>
+    <div id="rules" class="rules hidden">
+      <h2>Game Rules</h2>
+      <p>1. Each question has a time limit.</p>
+      <p>2. Wrong answers lead to negative marking.</p>
+      <p>3. Try to answer quickly for a better score!</p>
+      <button onclick="goHome()">Back</button>
+    </div>
+    <div id="timer-settings" class="timer-settings hidden">
+      <h2>Set Timer</h2>
+      <label>Time per question: <input type="number" id="time-input" value="30"> seconds</label>
+      <button onclick="saveTimerSettings()">Save</button>
+      <button onclick="goHome()">Back</button>
+    </div>
+    <div id="quiz" class="quiz hidden">
+      <div class="nature-animation" id="nature-animation"></div>
+      <h2 id="question"></h2>
+      <div id="options"></div>
+      <p id="timer"></p>
+    </div>
+    <div id="result" class="result hidden">
+      <h2>Game Over</h2>
+      <p id="score"></p>
+      <button onclick="goHome()">Home</button>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      { text: "Which gas do trees absorb?", choices: ["Oxygen", "Carbon Dioxide", "Nitrogen"], answer: 1, emoji: "🌳" },
+      { text: "Which is recyclable?", choices: ["Plastic Bottle", "Banana Peel", "Styrofoam"], answer: 0, emoji: "♻️" },
+      { text: "Which is renewable energy?", choices: ["Coal", "Wind", "Oil"], answer: 1, emoji: "💨" }
+    ];
+
+    let timePerQ = 30;
+    let currentQ = 0;
+    let score = 0;
+    let timerInterval;
+
+    const menu = document.getElementById('menu');
+    const rules = document.getElementById('rules');
+    const timerSettings = document.getElementById('timer-settings');
+    const quiz = document.getElementById('quiz');
+    const result = document.getElementById('result');
+
+    function showRules() {
+      hideAll();
+      rules.classList.remove('hidden');
+    }
+    function showTimerSettings() {
+      hideAll();
+      timerSettings.classList.remove('hidden');
+    }
+    function saveTimerSettings() {
+      timePerQ = parseInt(document.getElementById('time-input').value) || 30;
+      goHome();
+    }
+    function goHome() {
+      hideAll();
+      menu.classList.remove('hidden');
+    }
+    function hideAll() {
+      menu.classList.add('hidden');
+      rules.classList.add('hidden');
+      timerSettings.classList.add('hidden');
+      quiz.classList.add('hidden');
+      result.classList.add('hidden');
+    }
+    function showQuiz() {
+      hideAll();
+      quiz.classList.remove('hidden');
+      currentQ = 0; score = 0;
+      loadQuestion();
+    }
+    function loadQuestion() {
+      if (currentQ >= QUESTIONS.length) { endGame(); return; }
+      const q = QUESTIONS[currentQ];
+      document.getElementById('question').textContent = q.text;
+      document.getElementById('nature-animation').textContent = q.emoji;
+      const options = document.getElementById('options');
+      options.innerHTML = '';
+      q.choices.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(i);
+        options.appendChild(btn);
+      });
+      startTimer();
+    }
+    function startTimer() {
+      let time = timePerQ;
+      document.getElementById('timer').textContent = `Time: ${time}s`;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        time--;
+        document.getElementById('timer').textContent = `Time: ${time}s`;
+        if (time <= 0) {
+          clearInterval(timerInterval);
+          nextQuestion();
+        }
+      }, 1000);
+    }
+    function checkAnswer(i) {
+      if (i === QUESTIONS[currentQ].answer) score++;
+      else score -= 0.5;
+      nextQuestion();
+    }
+    function nextQuestion() {
+      currentQ++;
+      loadQuestion();
+    }
+    function endGame() {
+      hideAll();
+      result.classList.remove('hidden');
+      document.getElementById('score').textContent = `Your score: ${score}`;
+    }
+  </script>
+</body>
+</html>

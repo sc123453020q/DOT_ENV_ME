@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🌱 Plant & Protect the Trees</title>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to top, #76c893, #edf8f7);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            background: #87ceeb;
+            border: 5px solid #2e8b57;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #player {
+            position: absolute;
+            bottom: 20px;
+            left: 270px;
+            font-size: 2rem;
+        }
+
+        .falling {
+            position: absolute;
+            font-size: 2rem;
+            top: 0;
+        }
+
+        #tree {
+            position: absolute;
+            bottom: 0;
+            left: 250px;
+            width: 100px;
+            height: 100px;
+            background: #228B22;
+            border-radius: 0 0 50px 50px;
+            transition: height 0.5s ease;
+        }
+
+        #scoreBoard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 1px 1px #000;
+        }
+
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #fff;
+            text-align: center;
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gameContainer">
+        <div id="scoreBoard">🌳 Growth: 0%</div>
+        <div id="tree"></div>
+        <div id="player">🌱</div>
+        <div id="gameOver">🌱 Game Over!<br>Press Refresh to Play Again.</div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('gameContainer');
+        const player = document.getElementById('player');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const tree = document.getElementById('tree');
+        const gameOver = document.getElementById('gameOver');
+
+        let score = 0;
+        let treeHeight = 100;
+        let gameRunning = true;
+
+        // Control Player Movement
+        document.addEventListener('keydown', (e) => {
+            const step = 20;
+            const playerRect = player.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+
+            if (e.key === 'ArrowLeft' && player.offsetLeft > 0) {
+                player.style.left = player.offsetLeft - step + 'px';
+            } else if (e.key === 'ArrowRight' && player.offsetLeft < (containerRect.width - playerRect.width)) {
+                player.style.left = player.offsetLeft + step + 'px';
+            }
+        });
+
+        function spawnObject() {
+            if (!gameRunning) return;
+
+            const obj = document.createElement('div');
+            obj.classList.add('falling');
+            obj.style.left = Math.floor(Math.random() * 570) + 'px';
+
+            // Randomly decide between water and pollution
+            if (Math.random() < 0.7) {
+                obj.textContent = '💧';
+                obj.dataset.type = 'water';
+            } else {
+                obj.textContent = '☁️';
+                obj.dataset.type = 'pollution';
+            }
+
+            gameContainer.appendChild(obj);
+
+            let fallInterval = setInterval(() => {
+                if (!gameRunning) {
+                    clearInterval(fallInterval);
+                    return;
+                }
+
+                obj.style.top = obj.offsetTop + 5 + 'px';
+
+                const playerRect = player.getBoundingClientRect();
+                const objRect = obj.getBoundingClientRect();
+
+                // Collision Detection
+                if (
+                    objRect.bottom >= playerRect.top &&
+                    objRect.left < playerRect.right &&
+                    objRect.right > playerRect.left
+                ) {
+                    if (obj.dataset.type === 'water') {
+                        score += 5;
+                        treeHeight += 10;
+                        if (treeHeight > 300) treeHeight = 300;
+                    } else {
+                        score -= 5;
+                        treeHeight -= 10;
+                        if (treeHeight < 50) treeHeight = 50;
+                    }
+
+                    scoreBoard.textContent = `🌳 Growth: ${score}%`;
+                    tree.style.height = treeHeight + 'px';
+                    obj.remove();
+                    clearInterval(fallInterval);
+                } else if (obj.offsetTop > 600) {
+                    obj.remove();
+                    clearInterval(fallInterval);
+                }
+            }, 20);
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            spawnObject();
+
+            if (score >= 100) {
+                gameOver.textContent = "🎉 Congratulations! The Tree is Fully Grown!";
+                gameOver.style.display = 'block';
+                gameRunning = false;
+                return;
+            }
+
+            setTimeout(gameLoop, 800);
+        }
+
+        gameLoop();
+    </script>
+</body>
+
+</html>
