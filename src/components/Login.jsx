@@ -1,51 +1,39 @@
-// src/pages/Login.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase"; // Import the auth we exported from App.jsx
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-import bgImage from "../assets/education.svg";
+import logo1 from "../assets/logo1.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🔹 Regular login handler (dummy)
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (email === "test@example.com" && password === "1234") {
-      navigate("/home");
-    } else {
-      alert("Invalid email or password");
-    }
-  };
-
-  // 🔹 Google Sign-In handler
-  const handleGoogleLogin = async () => {
+    setError("");
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-
-      console.log("User Info:", result.user); // You get name, email, photo here
-      navigate("/home"); // Redirect after login
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
+      await signInWithEmailAndPassword(auth, email, password);
+      // Redirect to home, replacing the login page in history
+      navigate("/home", { replace: true });
+    } catch (err) {
+      console.error("Login Error:", err.message);
+      setError(err.message); // show actual Firebase error
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-      }}
-    >
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+    <div className="relative min-h-screen flex items-center justify-center bg-gray-100 overflow-hidden">
+      <div className="absolute -inset-40 z-0 watermark"></div>
+
+      <div className="relative z-10 bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
         <h2 className="text-center text-2xl font-bold mb-6 text-gray-800">
           LOG IN
         </h2>
+
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input
@@ -66,46 +54,45 @@ export default function Login() {
           />
           <button
             type="submit"
-            className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
           >
             Submit
           </button>
         </form>
 
-        <div className="mt-6 text-center text-gray-500">OR</div>
-
-        {/* Social Icons */}
-        <div className="flex justify-center space-x-4 mt-4">
-          <button className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
-            <i className="fab fa-facebook-f"></i>
-          </button>
-
-          {/* ✅ Google Login Button */}
-          <button
-            onClick={handleGoogleLogin}
-            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-          >
-            <i className="fab fa-google"></i>
-          </button>
-
-          <button className="bg-sky-400 text-white p-2 rounded-full hover:bg-sky-500">
-            <i className="fab fa-twitter"></i>
-          </button>
-        </div>
-
         {/* Links */}
         <div className="mt-6 text-center text-sm">
           <p>
             No account yet?{" "}
-            <a href="/register" className="text-blue-500 hover:underline">
+            <Link to="/register" className="text-blue-500 hover:underline">
               Register
-            </a>
+            </Link>
           </p>
-          <a href="/forgot-password" className="text-blue-500 hover:underline">
+          <Link to="/forgot-password" className="text-blue-500 hover:underline">
             Forgot your password?
-          </a>
+          </Link>
         </div>
       </div>
+
+      <style>
+        {`
+          .watermark {
+            position: absolute;
+            top: -200px;
+            left: -200px;
+            right: -200px;
+            bottom: -200px;
+            background-image: url(${logo1});
+            background-size: 280px;
+            background-repeat: repeat;
+            background-position: center;
+            opacity: 0.12;
+            transform: rotate(-30deg);
+            pointer-events: none;
+            user-select: none;
+          }
+        `}
+      </style>
     </div>
   );
 }

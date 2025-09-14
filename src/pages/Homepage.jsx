@@ -1,7 +1,8 @@
 // src/pages/Homepage.jsx
 import React from "react";
-import firebase from "firebase/compat/app";
+import { Link } from "react-router-dom"; // ✅ Import Link for routing
 import logo2 from "../assets/logo2.png";
+
 export default function Homepage() {
   return (
     <main className="pt-0.5">
@@ -13,13 +14,13 @@ export default function Homepage() {
             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
               Learn Exciting Concepts in a Gamefied Manner
             </h1>
-            <p className="mt-4 text-lg text-gray-600">
-              Physics Wallah brings affordable and quality education to every student.
-            </p>
+            <p className="mt-4 text-lg text-gray-600">hello users.</p>
             <div className="mt-6 flex space-x-4">
-              <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
-                Explore Games
-              </button>
+              <Link to="/games">
+                <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
+                  Explore Games
+                </button>
+              </Link>
               <button className="px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-blue-50">
                 Download App
               </button>
@@ -36,12 +37,14 @@ export default function Homepage() {
       {/* Courses Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Popular Games </h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Our Popular Games
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((course) => (
               <div key={course} className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6">
                 <img src={`/course-${course}.png`} alt="Games" className="rounded-md mb-4" />
-                <h3 className="font-semibold text-lg text-gray-800">Game Name {course}</h3>
+                <h3 className="font-semibold text-lg text-gray-800">Game {course}</h3>
                 <p className="text-gray-600 mt-2">Brief description of the course and its benefits.</p>
                 <button className="mt-4 text-green-600 hover:underline">ⓘLearn More</button>
               </div>
@@ -77,11 +80,7 @@ export default function Homepage() {
                   “XYZ has changed my learning journey completely. Highly recommended!”
                 </p>
                 <div className="mt-4 flex items-center space-x-3">
-                  <img
-                    src={`/student-${t}.png`}
-                    alt="Student"
-                    className="w-10 h-10 rounded-full"
-                  />
+                  <img src={`/student-${t}.png`} alt="Student" className="w-10 h-10 rounded-full" />
                   <span className="font-semibold text-gray-900">Student {t}</span>
                 </div>
               </div>
@@ -102,7 +101,11 @@ export default function Homepage() {
             <ul className="space-y-2">
               <li><a href="#">About Us</a></li>
               <li><a href="#">Courses</a></li>
-              <li><a href="#">Contact</a></li>
+              <li>
+                <Link to="/contact" className="hover:underline">
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

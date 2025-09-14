@@ -4,3 +4,5 @@ npm install firebase
 npm install three @react-three/fiber @react-three/drei
 npm install framer-motion lucide-react
 npm install @react-spring/web @react-spring/three
+npm install emailjs-com
+
