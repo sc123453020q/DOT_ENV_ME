@@ -12,11 +12,15 @@ import Games from "./pages/Games";
 import LeaderBoard from "./pages/LeaderBoard";
 import DiscussForum from "./pages/DiscussForum";
 import Quiz from "./pages/Quiz";
-import Contact from "./pages/contact"; // ✅ Correct import
+import Contact from "./pages/contact";
 
 // ✅ Import games
 import EcoQuest from "./games/Ecoquest";
-import EcoHero from "./games/EcoHero"; // ✅ New import
+import EcoHero from "./games/EcoHero";
+
+// ✅ Import courses
+import Course from "./pages/Course";
+import EcoMind from "./courses/EcoMind"; // ✅ new import
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -64,6 +68,27 @@ function App() {
             }
           />
 
+          {/* ✅ Courses Page */}
+          <Route
+            path="/course"
+            element={
+              <ProtectedRoute>
+                <Course />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Individual Course Routes */}
+          <Route
+            path="/course/ecomind"
+            element={
+              <ProtectedRoute>
+                <EcoMind />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Other Routes */}
           <Route
             path="/leaderboard"
             element={

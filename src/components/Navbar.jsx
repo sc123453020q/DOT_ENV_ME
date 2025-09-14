@@ -32,45 +32,27 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <Link to="/">
-            <img src={logo} alt="Logo" className="h-10 w-auto" />
+            <img src={logo} alt="Logo" className="h-18 w-auto" />
           </Link>
         </div>
 
         {/* Menu */}
         <nav className="hidden md:flex space-x-8 font-medium text-gray-700">
-          <Link to="/Games" className="hover:text-green-600 transition-colors">
+          <Link to="/games" className="hover:text-green-600 transition-colors">
             Games
           </Link>
-          <Link to="/LeaderBoard" className="hover:text-green-600 transition-colors">
+          <Link to="/leaderboard" className="hover:text-green-600 transition-colors">
             LeaderBoard
           </Link>
-          <Link to="/Request A Demo" className="hover:text-green-600 transition-colors">
+          <Link to="/course" className="hover:text-green-600 transition-colors">
+            Courses
+          </Link>
+          <Link to="/discuss-forum" className="hover:text-green-600 transition-colors">
+            Discuss Forum
+          </Link>
+          <Link to="/demo" className="hover:text-green-600 transition-colors">
             Demo
           </Link>
-
-          {/* More with dropdown */}
-          <div className="relative group">
-            <button className="hover:text-green-600 transition-colors">
-              More ▾
-            </button>
-
-            <div className="absolute left-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg 
-                            opacity-0 invisible group-hover:opacity-100 group-hover:visible 
-                            transition-all duration-200 transform scale-95 group-hover:scale-100">
-              <Link
-                to="/Courses"
-                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-green-600 rounded-t-md"
-              >
-                Courses
-              </Link>
-              <Link
-                to="/discuss-forum"
-                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-green-600 rounded-b-md"
-              >
-                Discuss Forum
-              </Link>
-            </div>
-          </div>
         </nav>
 
         {/* Buttons */}
