@@ -20,7 +20,7 @@ import EcoHero from "./games/EcoHero";
 
 // ✅ Import courses
 import Course from "./pages/Course";
-import EcoMind from "./courses/EcoMind"; // ✅ new import
+import EcoMind from "./courses/ecomind"; // ✅ new import
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
