@@ -3,25 +3,31 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+
+// ✅ Pages
 import Homepage from "./pages/Homepage";
 import Login from "./components/Login";
 import Register from "./pages/register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Demo from "./pages/Demo";
+import ResearchRef from "./pages/research"; // ✅ Added ResearchRef
 import Games from "./pages/Games";
 import LeaderBoard from "./pages/LeaderBoard";
 import DiscussForum from "./pages/DiscussForum";
 import Quiz from "./pages/Quiz";
 import Contact from "./pages/contact";
+import AboutUs from "./pages/About";  
 
-// ✅ Import games
+// ✅ Games
 import EcoQuest from "./games/Ecoquest";
 import EcoHero from "./games/EcoHero";
 
-// ✅ Import courses
+// ✅ Courses
 import Course from "./pages/Course";
-import EcoMind from "./courses/ecomind"; // ✅ new import
+import EcoMind from "./courses/ecomind"; 
+import EcoCarbonQuest from "./courses/EcoCarbonQuest"; 
 
+// ✅ Protected route
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -36,8 +42,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/demo" element={<Demo />} />
+          <Route path="/demo" element={<Demo />} />   {/* ✅ Under "More" */}
+          <Route path="/researchref" element={<ResearchRef />} /> {/* ✅ Under "More" */}
           <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<AboutUs />} />
 
           {/* Protected Routes */}
           <Route
@@ -58,7 +66,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/games/ecohero"
             element={
@@ -78,7 +85,7 @@ function App() {
             }
           />
 
-          {/* ✅ Individual Course Routes */}
+          {/* ✅ Individual Courses */}
           <Route
             path="/course/ecomind"
             element={
@@ -87,8 +94,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/course/ecocarbonquest"
+            element={
+              <ProtectedRoute>
+                <EcoCarbonQuest />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Other Routes */}
+          {/* Other Protected Pages */}
           <Route
             path="/leaderboard"
             element={

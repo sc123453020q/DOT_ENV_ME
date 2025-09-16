@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
+  const [showMore, setShowMore] = useState(false); // 🔹 for dropdown toggle
   const navigate = useNavigate();
 
   // 🔹 Listen to login/logout state
@@ -26,6 +27,31 @@ export default function Navbar() {
     }
   };
 
+  // 🔹 Main menu (without "More")
+  const mainMenu = [
+    { path: "/games", label: "Games" },
+    { path: "/leaderboard", label: "LeaderBoard" },
+    { path: "/course", label: "Courses" },
+    { path: "/discuss-forum", label: "Discuss Forum" },
+  ];
+
+  // 🔹 Dropdown menu under "More"
+  const moreMenu = [
+    { path: "/demo", label: "Demo" },
+    { path: "/researchref", label: "ResearchRef" },
+  ];
+
+  // 🔹 Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest("#more-menu")) {
+        setShowMore(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
     <header className="bg-white shadow-md fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -37,22 +63,40 @@ export default function Navbar() {
         </div>
 
         {/* Menu */}
-        <nav className="hidden md:flex space-x-8 font-medium text-gray-700">
-          <Link to="/games" className="hover:text-green-600 transition-colors">
-            Games
-          </Link>
-          <Link to="/leaderboard" className="hover:text-green-600 transition-colors">
-            LeaderBoard
-          </Link>
-          <Link to="/course" className="hover:text-green-600 transition-colors">
-            Courses
-          </Link>
-          <Link to="/discuss-forum" className="hover:text-green-600 transition-colors">
-            Discuss Forum
-          </Link>
-          <Link to="/demo" className="hover:text-green-600 transition-colors">
-            Demo
-          </Link>
+        <nav className="hidden md:flex space-x-8 font-medium text-gray-700 relative">
+          {mainMenu.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="hover:text-green-600 transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
+
+          {/* 🔹 More dropdown */}
+          <div id="more-menu" className="relative">
+            <button
+              onClick={() => setShowMore((prev) => !prev)}
+              className="hover:text-green-600 transition-colors flex items-center gap-1"
+            >
+              More ▾
+            </button>
+            {showMore && (
+              <div className="absolute top-full left-0 mt-2 w-44 bg-white shadow-lg rounded-md border py-2 z-50">
+                {moreMenu.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setShowMore(false)} // close after click
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Buttons */}

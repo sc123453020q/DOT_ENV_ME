@@ -7,14 +7,14 @@ export default function Course() {
     {
       id: 1,
       title: "EcoMind",
-      path: "/course/ecomind", // ✅ updated path
-      thumbnail: "https://via.placeholder.com/300x200?text=EcoMind", // ✅ updated thumbnail
+      path: "/course/ecomind", // ✅ existing course
+      thumbnail: "https://via.placeholder.com/300x200?text=EcoMind",
     },
     {
       id: 2,
-      title: "Renewable Energy Basics",
-      path: "/course/renewable",
-      thumbnail: "https://via.placeholder.com/300x200?text=Renewable+Energy",
+      title: "EcoCarbonQuest", // ✅ replaced course name
+      path: "/course/ecocarbonquest", // ✅ new path
+      thumbnail: "https://via.placeholder.com/300x200?text=EcoCarbonQuest", // ✅ new thumbnail
     },
     {
       id: 3,

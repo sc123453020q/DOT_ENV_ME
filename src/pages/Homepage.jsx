@@ -1,6 +1,6 @@
 // src/pages/Homepage.jsx
 import React from "react";
-import { Link } from "react-router-dom"; // ✅ Import Link for routing
+import { Link } from "react-router-dom";
 import logo2 from "../assets/logo2.png";
 
 export default function Homepage() {
@@ -14,7 +14,7 @@ export default function Homepage() {
             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
               Learn Exciting Concepts in a Gamefied Manner
             </h1>
-            <p className="mt-4 text-lg text-gray-600">hello users.</p>
+            <p className="mt-4 text-lg text-gray-600">Learn, play, and grow!</p>
             <div className="mt-6 flex space-x-4">
               <Link to="/games">
                 <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
@@ -29,7 +29,11 @@ export default function Homepage() {
 
           {/* Right */}
           <div className="flex-1 mt-8 md:mt-0">
-            <img src="/hero-image.png" alt="Hero" className="w-full rounded-lg shadow-lg" />
+            <img
+              src="/hero-image.png"
+              alt="Hero"
+              className="w-full rounded-lg shadow-lg"
+            />
           </div>
         </div>
       </section>
@@ -42,11 +46,24 @@ export default function Homepage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((course) => (
-              <div key={course} className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6">
-                <img src={`/course-${course}.png`} alt="Games" className="rounded-md mb-4" />
-                <h3 className="font-semibold text-lg text-gray-800">Game {course}</h3>
-                <p className="text-gray-600 mt-2">Brief description of the course and its benefits.</p>
-                <button className="mt-4 text-green-600 hover:underline">ⓘLearn More</button>
+              <div
+                key={course}
+                className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6"
+              >
+                <img
+                  src={`/course-${course}.png`}
+                  alt="Games"
+                  className="rounded-md mb-4"
+                />
+                <h3 className="font-semibold text-lg text-gray-800">
+                  Game {course}
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Brief description of the game and its benefits.
+                </p>
+                <button className="mt-4 text-green-600 hover:underline">
+                  ⓘLearn More
+                </button>
               </div>
             ))}
           </div>
@@ -69,26 +86,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">What Students Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((t) => (
-              <div key={t} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-lg transition">
-                <p className="text-gray-700">
-                  “XYZ has changed my learning journey completely. Highly recommended!”
-                </p>
-                <div className="mt-4 flex items-center space-x-3">
-                  <img src={`/student-${t}.png`} alt="Student" className="w-10 h-10 rounded-full" />
-                  <span className="font-semibold text-gray-900">Student {t}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-12">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -99,8 +96,16 @@ export default function Homepage() {
           <div>
             <h3 className="font-semibold mb-3 text-white">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Courses</a></li>
+              <li>
+                <Link to="/about" className="hover:underline">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/course" className="hover:underline">
+                  Courses
+                </Link>
+              </li>
               <li>
                 <Link to="/contact" className="hover:underline">
                   Contact Us
@@ -108,21 +113,6 @@ export default function Homepage() {
               </li>
             </ul>
           </div>
-          <div>
-            <h3 className="font-semibold mb-3 text-white">Follow Us</h3>
-            <ul className="space-y-2">
-              <li><a href="#">YouTube</a></li>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">Twitter</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-3 text-white">Get Our App</h3>
-            <img src="/playstore.png" alt="Play Store" className="h-10" />
-          </div>
-        </div>
-        <div className="mt-8 text-center text-sm text-gray-500">
-          © 2025 . All rights reserved.
         </div>
       </footer>
     </main>
