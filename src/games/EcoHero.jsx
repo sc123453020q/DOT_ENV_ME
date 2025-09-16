@@ -1,4 +1,7 @@
+// src/pages/EcoHero.jsx
 import { useState, useEffect } from "react";
+import { db } from "../firebase";
+import { ref, get, update } from "firebase/database";
 
 const facts = {
   Plastic: "Plastic can be recycled into new products!",
@@ -37,7 +40,6 @@ export default function EcoHero() {
   const [currentRound, setCurrentRound] = useState(1);
   const [gameOver, setGameOver] = useState(false);
   const [targetItems, setTargetItems] = useState(0);
-  const [itemsThisRound, setItemsThisRound] = useState(0);
   const [roundScores, setRoundScores] = useState([]);
   const [selectedAvatar, setSelectedAvatar] = useState(avatars[0]);
 
@@ -132,7 +134,6 @@ export default function EcoHero() {
       const timeout = setTimeout(() => {
         setSortingPhase(true);
         setTrashList([]);
-        setItemsThisRound(collectedTrash.length);
       }, 1000);
       return () => clearTimeout(timeout);
     }
@@ -152,20 +153,47 @@ export default function EcoHero() {
   useEffect(() => {
     if (sortingPhase && collectedTrash.length === 0 && totalRounds !== null) {
       setTimeout(() => {
-        setRoundScores((prev) => [...prev, score]);
-        if (currentRound >= totalRounds) {
-          setGameOver(true);
-        } else {
-          setCurrentRound((r) => r + 1);
-          setSortingPhase(false);
-          setItemsThisRound(0);
-          setCollectedTrash([]);
-          setTargetItems(Math.floor(Math.random() * 10) + 1);
-          setScore(0);
-        }
+        setRoundScores((prev) => {
+          const updatedScores = [...prev, score];
+
+          if (currentRound >= totalRounds) {
+            setGameOver(true);
+
+            const total = updatedScores.reduce((a, b) => a + b, 0);
+
+            // ✅ Save score in users/{userId}
+            const userId = localStorage.getItem("userId");
+            const email = localStorage.getItem("email") || "Guest";
+
+            if (userId) {
+              const userRef = ref(db, "users/" + userId);
+
+              // Get ecoQuestScore first
+              get(userRef).then((snapshot) => {
+                const data = snapshot.val() || {};
+                const ecoQuestScore = data.ecoQuestScore || 0;
+
+                update(userRef, {
+                  email: email,
+                  ecoHeroScore: total,
+                  ecoQuestScore: ecoQuestScore,
+                  totalScore: ecoQuestScore + total,
+                });
+              });
+            }
+          } else {
+            setCurrentRound((r) => r + 1);
+            setSortingPhase(false);
+            setCollectedTrash([]);
+            setTargetItems(Math.floor(Math.random() * 10) + 1);
+            setScore(0);
+          }
+
+          return updatedScores;
+        });
       }, 1000);
     }
-  }, [sortingPhase, collectedTrash, currentRound, totalRounds, score]);
+  }, [sortingPhase, collectedTrash, currentRound, totalRounds, score, selectedAvatar]);
 
   // ------------------ RENDER ------------------
   if (totalRounds === null) {
@@ -182,10 +210,6 @@ export default function EcoHero() {
           onChange={(e) => setRoundInput(e.target.value)}
           className="mt-3 p-2 border-2 border-gray-700 rounded-lg text-lg"
         />
-        <p className="mt-2 text-lg">
-          You entered: <strong>{roundInput || 0}</strong> rounds
-        </p>
-
         <div className="flex gap-3 mt-4">
           {avatars.map((a, idx) => (
             <button
@@ -199,7 +223,6 @@ export default function EcoHero() {
             </button>
           ))}
         </div>
-
         <button
           onClick={() => {
             const value = parseInt(roundInput);
@@ -219,6 +242,7 @@ export default function EcoHero() {
   }
 
   if (gameOver) {
+    const totalScore = roundScores.reduce((a, b) => a + b, 0);
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-red-100">
         <h2 className="text-2xl font-bold mb-3">🎉 Game Over! 🎉</h2>
@@ -229,7 +253,7 @@ export default function EcoHero() {
           ))}
         </ul>
         <p className="font-bold mb-3">
-          Total Score: {roundScores.reduce((a, b) => a + b, 0)}
+          Total Score: {totalScore}
         </p>
         <button
           onClick={() => window.location.reload()}

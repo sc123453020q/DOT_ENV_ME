@@ -12,13 +12,18 @@ export default function Homepage() {
           {/* Left */}
           <div className="flex-1">
             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
-              Learn Exciting Concepts in a Gamefied Manner
+              Learn Exciting Concepts in a Gamified Manner
             </h1>
             <p className="mt-4 text-lg text-gray-600">Learn, play, and grow!</p>
-            <div className="mt-6 flex space-x-4">
+            <div className="mt-6 flex flex-wrap gap-4">
               <Link to="/games">
                 <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
                   Explore Games
+                </button>
+              </Link>
+              <Link to="/leaderboard">
+                <button className="px-6 py-3 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600">
+                  View Leaderboard
                 </button>
               </Link>
               <button className="px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-blue-50">
@@ -40,35 +45,36 @@ export default function Homepage() {
 
       {/* Courses Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Our Popular Games
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((course) => (
-              <div
-                key={course}
-                className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6"
-              >
-                <img
-                  src={`/course-${course}.png`}
-                  alt="Games"
-                  className="rounded-md mb-4"
-                />
-                <h3 className="font-semibold text-lg text-gray-800">
-                  Game {course}
-                </h3>
-                <p className="text-gray-600 mt-2">
-                  Brief description of the game and its benefits.
-                </p>
-                <button className="mt-4 text-green-600 hover:underline">
-                  ⓘLearn More
-                </button>
-              </div>
-            ))}
-          </div>
+  <div className="max-w-7xl mx-auto px-6">
+    <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+      Our Popular Games
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        { name: "EcoQuest", img: "/ecoquest.png", desc: "An engaging quest game that teaches eco-friendly habits." },
+        { name: "EcoHero", img: "/ecohero.png", desc: "Become an EcoHero by sorting and recycling correctly." },
+        { name: "Puzzle", img: "/puzzle.png", desc: "Challenge your mind with eco-themed puzzles." },
+      ].map((game, index) => (
+        <div
+          key={index}
+          className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6"
+        >
+          <img
+            src={game.img}
+            alt={game.name}
+            className="rounded-md mb-4"
+          />
+          <h3 className="font-semibold text-lg text-gray-800">{game.name}</h3>
+          <p className="text-gray-600 mt-2">{game.desc}</p>
+          <button className="mt-4 text-green-600 hover:underline">
+            ⓘ Learn More
+          </button>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* Stats Section */}
       <section className="py-16 bg-blue-50">
@@ -99,7 +105,8 @@ export default function Homepage() {
                 className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-lg transition"
               >
                 <p className="text-gray-700">
-                  “XYZ has changed my learning journey completely. Highly recommended!”
+                  “XYZ has changed my learning journey completely. Highly
+                  recommended!”
                 </p>
                 <div className="mt-4 flex items-center space-x-3">
                   <img
@@ -107,7 +114,9 @@ export default function Homepage() {
                     alt="Student"
                     className="w-10 h-10 rounded-full"
                   />
-                  <span className="font-semibold text-gray-900">Student {t}</span>
+                  <span className="font-semibold text-gray-900">
+                    Student {t}
+                  </span>
                 </div>
               </div>
             ))}
@@ -136,6 +145,11 @@ export default function Homepage() {
                 </Link>
               </li>
               <li>
+                <Link to="/leaderboard" className="hover:underline">
+                  Leaderboard
+                </Link>
+              </li>
+              <li>
                 <Link to="/contact" className="hover:underline">
                   Contact Us
                 </Link>
@@ -145,9 +159,21 @@ export default function Homepage() {
           <div>
             <h3 className="font-semibold mb-3 text-white">Follow Us</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">YouTube</a></li>
-              <li><a href="#" className="hover:underline">Instagram</a></li>
-              <li><a href="#" className="hover:underline">LinkedIn</a></li>
+              <li>
+                <a href="#" className="hover:underline">
+                  YouTube
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline">
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline">
+                  LinkedIn
+                </a>
+              </li>
             </ul>
           </div>
           <div>

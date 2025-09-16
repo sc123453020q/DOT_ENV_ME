@@ -1,29 +1,26 @@
+// src/games/EcoQuest.jsx
 import React, { useState, useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { getDatabase, ref, update, increment, get, set } from "firebase/database";
 
 export default function EcoQuest() {
-  // --------------------
-  // GAME DATA
-  // --------------------
   const QUESTIONS = [
     {
       text: "Which gas do trees absorb during photosynthesis?",
       choices: ["Oxygen", "Carbon Dioxide", "Methane", "Nitrogen"],
       answer: 1,
-      cat: "tree",
       emoji: "🌳",
     },
     {
       text: "Which of the following is the best example of a recyclable item?",
       choices: ["Banana peel", "Plastic bottle", "Styrofoam cup", "Tissue"],
       answer: 1,
-      cat: "recycle",
       emoji: "♻",
     },
     {
       text: "Which is a renewable source of energy?",
       choices: ["Coal", "Wind", "Diesel", "Natural Gas"],
       answer: 1,
-      cat: "wind",
       emoji: "💨",
     },
     {
@@ -35,7 +32,6 @@ export default function EcoQuest() {
         "Stopping winds",
       ],
       answer: 1,
-      cat: "ocean",
       emoji: "🌊",
     },
     {
@@ -47,28 +43,24 @@ export default function EcoQuest() {
         "Refuse, Reduce, React",
       ],
       answer: 0,
-      cat: "recycle",
       emoji: "♻",
     },
   ];
 
-  // --------------------
-  // GAME STATE
-  // --------------------
-  const [screen, setScreen] = useState("home"); // "home" | "quiz" | "result"
+  const [screen, setScreen] = useState("home");
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
   const [skipped, setSkipped] = useState(0);
-
-  const [penalty, setPenalty] = useState(0.25);
-  const [timeLeft, setTimeLeft] = useState(180); // seconds
+  const [penalty] = useState(0.25);
+  const [timeLeft, setTimeLeft] = useState(180);
   const [timerRunning, setTimerRunning] = useState(false);
 
-  // --------------------
-  // TIMER EFFECT
-  // --------------------
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const db = getDatabase();
+
   useEffect(() => {
     let interval;
     if (timerRunning && timeLeft > 0) {
@@ -85,9 +77,6 @@ export default function EcoQuest() {
     return `${m}:${s}`;
   };
 
-  // --------------------
-  // GAME FLOW
-  // --------------------
   const startGame = () => {
     setIdx(0);
     setScore(0);
@@ -124,14 +113,39 @@ export default function EcoQuest() {
     }
   };
 
-  const finishQuiz = () => {
+  const finishQuiz = async () => {
     setTimerRunning(false);
     setScreen("result");
+
+    // ---------------------------
+    // SAVE SCORE TO REALTIME DB
+    // ---------------------------
+    if (user) {
+      try {
+        const userRef = ref(db, "users/" + user.uid);
+
+        // First check if user already has score data
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const prevData = snapshot.val();
+          await update(userRef, {
+            totalScore: (prevData.totalScore || 0) + score,
+            ecoQuestScore: (prevData.ecoQuestScore || 0) + score,
+          });
+        } else {
+          // If user does not exist in DB yet, create entry
+          await set(userRef, {
+            email: user.email,
+            totalScore: score,
+            ecoQuestScore: score,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to update score in Realtime DB:", err);
+      }
+    }
   };
 
-  // --------------------
-  // UI
-  // --------------------
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-700 to-green-400 text-white flex items-center justify-center">
       <div className="w-full max-w-4xl p-6 rounded-2xl bg-white/30 backdrop-blur-md shadow-lg">
@@ -142,13 +156,10 @@ export default function EcoQuest() {
           </span>
         </header>
 
-        {/* HOME SCREEN */}
         {screen === "home" && (
           <div className="text-center space-y-4 py-8">
             <h2 className="text-3xl font-extrabold">Learn • Play • Protect</h2>
-            <p className="opacity-80">
-              Master sustainability through quick quizzes.
-            </p>
+            <p className="opacity-80">Master sustainability through quick quizzes.</p>
             <button
               onClick={startGame}
               className="px-6 py-3 bg-green-500 hover:bg-green-600 rounded-xl font-bold shadow-lg"
@@ -158,13 +169,10 @@ export default function EcoQuest() {
           </div>
         )}
 
-        {/* QUIZ SCREEN */}
         {screen === "quiz" && (
           <div className="py-6 space-y-6">
             <div className="flex justify-between bg-black/20 p-3 rounded-lg">
-              <span>
-                Question {idx + 1}/{QUESTIONS.length}
-              </span>
+              <span>Question {idx + 1}/{QUESTIONS.length}</span>
               <span>Score: {score}</span>
             </div>
 
@@ -202,12 +210,9 @@ export default function EcoQuest() {
           </div>
         )}
 
-        {/* RESULT SCREEN */}
         {screen === "result" && (
           <div className="text-center py-8 space-y-6">
-            <h2 className="text-2xl font-extrabold">
-              Your EcoQuest Results 🌱
-            </h2>
+            <h2 className="text-2xl font-extrabold">Your EcoQuest Results 🌱</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
               <div className="bg-white/20 p-3 rounded-lg text-black">Score: {score}</div>
               <div className="bg-white/20 p-3 rounded-lg text-black">Correct: {correct}</div>

@@ -6,7 +6,7 @@ export default function DiscussForum() {
     <div className="p-6">
       <h1 className="text-2xl font-bold">Discussion Forum</h1>
       <p className="mt-2 text-gray-600">
-        This is the discussion forum page. You can integrate posts, threads, or comments here.
+        This Page is Comming Soon.
       </p>
     </div>
   );

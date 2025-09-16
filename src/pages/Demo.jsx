@@ -6,8 +6,9 @@ export default function Demo() {
     <div className="p-6">
       <h1 className="text-2xl font-bold">Request a Demo</h1>
       <p className="mt-2 text-gray-600">
-        This is the demo page. You can add form fields or limited access content here.
+        This Page will help the user to know what the website is all about. 
       </p>
+      <h1 className="text-2xl font-bold">Comming Soon.......</h1>
     </div>
   );
 }
