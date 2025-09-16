@@ -76,13 +76,42 @@ export default function Homepage() {
           {[
             { number: "5+", label: "Students" },
             { number: "1", label: "Educators" },
-            { number: "10", label: "Courses" },
+            { number: "3", label: "Courses" },
           ].map((stat, i) => (
             <div key={i}>
               <h3 className="text-4xl font-bold text-green-600">{stat.number}</h3>
               <p className="text-gray-700 mt-2">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            What Students Say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((t) => (
+              <div
+                key={t}
+                className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-lg transition"
+              >
+                <p className="text-gray-700">
+                  “XYZ has changed my learning journey completely. Highly recommended!”
+                </p>
+                <div className="mt-4 flex items-center space-x-3">
+                  <img
+                    src={`/student-${t}.png`}
+                    alt="Student"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <span className="font-semibold text-gray-900">Student {t}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -113,6 +142,21 @@ export default function Homepage() {
               </li>
             </ul>
           </div>
+          <div>
+            <h3 className="font-semibold mb-3 text-white">Follow Us</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:underline">YouTube</a></li>
+              <li><a href="#" className="hover:underline">Instagram</a></li>
+              <li><a href="#" className="hover:underline">LinkedIn</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-3 text-white">Get Our App</h3>
+            <img src="/playstore.png" alt="Play Store" className="h-10" />
+          </div>
+        </div>
+        <div className="mt-8 text-center text-sm text-gray-500">
+          © 2025 . All rights reserved.
         </div>
       </footer>
     </main>
