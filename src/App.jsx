@@ -17,6 +17,7 @@ import DiscussForum from "./pages/DiscussForum";
 import Quiz from "./pages/Quiz";
 import Contact from "./pages/contact";
 import AboutUs from "./pages/About";  
+import DailyMission from "./pages/dailymission";  // ✅ NEW Import
 
 // ✅ Games
 import EcoQuest from "./games/Ecoquest";
@@ -46,6 +47,16 @@ function App() {
           <Route path="/researchref" element={<ResearchRef />} /> {/* ✅ Under "More" */}
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<AboutUs />} />
+
+          {/* ✅ Daily Mission Page */}
+          <Route
+            path="/dailymission"
+            element={
+              <ProtectedRoute>
+                <DailyMission />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route

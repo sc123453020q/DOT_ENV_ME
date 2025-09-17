@@ -39,6 +39,7 @@ export default function Navbar() {
   const moreMenu = [
     { path: "/demo", label: "Demo" },
     { path: "/researchref", label: "ResearchRef" },
+    { path: "/dailymission", label: "Daily Mission" }, // ✅ Added new item
   ];
 
   // 🔹 Close dropdown when clicking outside
