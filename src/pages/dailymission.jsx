@@ -28,8 +28,18 @@ export default function DailyMission() {
   const maxPoints = missions.reduce((sum, m) => sum + m.points, 0);
   const progressPercent = (totalPoints / maxPoints) * 100;
 
+  // ✅ Check if all missions are completed
+  const allCompleted = completed.length === missions.length;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 px-4 relative">
+      
+      {/* ✅ Score Bar (floating top-right of page) */}
+      <div className="absolute top-27 right-6 bg-green-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg">
+        🌿 Score: {totalPoints}
+      </div>
+
+      {/* Daily Mission Card */}
       <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-md">
         {/* Title */}
         <h2 className="text-xl font-bold text-center text-gray-800 flex items-center justify-center gap-2 mb-4">
@@ -72,6 +82,13 @@ export default function DailyMission() {
             </li>
           ))}
         </ul>
+
+        {/* ✅ Completion Message */}
+        {allCompleted && (
+          <div className="mt-6 text-center text-green-700 font-bold text-lg animate-bounce">
+            🎉 Yeah, congo! All missions completed! 🌟
+          </div>
+        )}
       </div>
     </div>
   );
