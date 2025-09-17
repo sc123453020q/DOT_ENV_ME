@@ -86,7 +86,7 @@ export default function DailyMission() {
         {/* ✅ Completion Message */}
         {allCompleted && (
           <div className="mt-6 text-center text-green-700 font-bold text-lg animate-bounce">
-            🎉 Yeah, congo! All missions completed! 🌟
+            🎉Congratulations! All missions completed!🌟
           </div>
         )}
       </div>
