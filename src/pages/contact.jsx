@@ -1,6 +1,8 @@
 // src/pages/Contact.jsx
 import React, { useState } from "react";
 import emailjs from "emailjs-com";
+import contact_bg from "../assets/contact_bg.jpg";
+
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -87,9 +89,9 @@ export default function Contact() {
       {/* Illustration */}
       <div className="mt-10 md:mt-0 flex justify-center w-full md:w-1/2">
         <img
-          src="https://i.ibb.co/hRD9DgF/contact-illustration.png"
+          src={contact_bg}
           alt="Illustration"
-          className="max-w-[380px] w-full"
+          className="max-w-[2000px] w-full"
         />
       </div>
     </div>

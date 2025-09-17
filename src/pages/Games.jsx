@@ -48,7 +48,7 @@ export default function Games() {
           
           {/* EcoQuest game card (clickable) */}
           <Link
-            to="/games/ecoquest"   // ✅ redirect to EcoQuest.jsx
+            to="/games/ecoquest"
             className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all"
           >
             <img
@@ -63,7 +63,7 @@ export default function Games() {
 
           {/* EcoHero game card (clickable) */}
           <Link
-            to="/games/ecohero"   // ✅ redirect to EcoHero.jsx
+            to="/games/ecohero"
             className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all"
           >
             <img
@@ -76,17 +76,21 @@ export default function Games() {
             </div>
           </Link>
 
-          {/* Puzzle game card */}
-          <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all">
+          {/* Puzzle game card (clickable → Coming Soon) */}
+          <Link
+            to="/games/puzzle"
+            className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all"
+          >
             <img 
               src="https://via.placeholder.com/300x200?text=Puzzle" 
               alt="Puzzle" 
               className="w-full h-48 object-cover" 
             />
-            <div className="p-4">
+            <div className="p-4 text-center">
               <h3 className="text-xl font-semibold text-gray-800">Puzzle</h3>
+              <p className="text-gray-500 mt-2 italic">Coming Soon</p>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
     </div>

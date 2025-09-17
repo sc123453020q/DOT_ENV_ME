@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo2 from "../assets/logo2.png";
+import team from "../assets/team.jpg";
 
 export default function Homepage() {
   return (
@@ -26,8 +27,13 @@ export default function Homepage() {
                   View Leaderboard
                 </button>
               </Link>
-              <button className="px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-blue-50">
+
+              {/* Download App with tooltip */}
+              <button className="px-6 py-3 border border-green-600 text-green-600 rounded-lg hover:bg-blue-50 relative group">
                 Download App
+                <span className="absolute left-1/2 -translate-x-1/2 -top-12 px-3 py-2 text-sm text-white bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow-lg">
+                  You can download it after sometime
+                </span>
               </button>
             </div>
           </div>
@@ -35,7 +41,7 @@ export default function Homepage() {
           {/* Right */}
           <div className="flex-1 mt-8 md:mt-0">
             <img
-              src="/hero-image.png"
+              src={team}
               alt="Hero"
               className="w-full rounded-lg shadow-lg"
             />
@@ -45,36 +51,54 @@ export default function Homepage() {
 
       {/* Courses Section */}
       <section className="py-16 bg-white">
-  <div className="max-w-7xl mx-auto px-6">
-    <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-      Our Popular Games
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {[
-        { name: "EcoQuest", img: "/ecoquest.png", desc: "An engaging quest game that teaches eco-friendly habits." },
-        { name: "EcoHero", img: "/ecohero.png", desc: "Become an EcoHero by sorting and recycling correctly." },
-        { name: "Puzzle", img: "/puzzle.png", desc: "Challenge your mind with eco-themed puzzles." },
-      ].map((game, index) => (
-        <div
-          key={index}
-          className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6"
-        >
-          <img
-            src={game.img}
-            alt={game.name}
-            className="rounded-md mb-4"
-          />
-          <h3 className="font-semibold text-lg text-gray-800">{game.name}</h3>
-          <p className="text-gray-600 mt-2">{game.desc}</p>
-          <button className="mt-4 text-green-600 hover:underline">
-            ⓘ Learn More
-          </button>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Our Popular Games
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "EcoQuest",
+                img: "/ecoquest.png",
+                desc: "An engaging quest game that teaches eco-friendly habits.",
+              },
+              {
+                name: "EcoHero",
+                img: "/ecohero.png",
+                desc: "Become an EcoHero by sorting and recycling correctly.",
+              },
+              {
+                name: "Puzzle",
+                img: "/puzzle.png",
+                desc: "Challenge your mind with eco-themed puzzles.",
+              },
+            ].map((game, index) => (
+              <div
+                key={index}
+                className="bg-white border rounded-lg shadow hover:shadow-lg transition p-6"
+              >
+                <img
+                  src={game.img}
+                  alt={game.name}
+                  className="rounded-md mb-4"
+                />
+                <h3 className="font-semibold text-lg text-gray-800">
+                  {game.name}
+                </h3>
+                <p className="text-gray-600 mt-2">{game.desc}</p>
 
+                {/* Learn More with tooltip */}
+                <button className="mt-4 text-green-600 hover:underline relative group">
+                  ⓘ Learn More
+                  <span className="absolute left-1/2 -translate-x-1/2 -top-12 px-3 py-2 text-sm text-white bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow-lg">
+                    Click on the Games section in the navbar to explore
+                  </span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Stats Section */}
       <section className="py-16 bg-blue-50">
@@ -85,7 +109,9 @@ export default function Homepage() {
             { number: "3", label: "Courses" },
           ].map((stat, i) => (
             <div key={i}>
-              <h3 className="text-4xl font-bold text-green-600">{stat.number}</h3>
+              <h3 className="text-4xl font-bold text-green-600">
+                {stat.number}
+              </h3>
               <p className="text-gray-700 mt-2">{stat.label}</p>
             </div>
           ))}
